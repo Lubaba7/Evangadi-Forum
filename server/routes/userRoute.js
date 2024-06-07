@@ -1,10 +1,10 @@
 const express =require("express");
 const router = express.Router();
+
+const {register, login, checkuser} = require("../controllers/userController")
 //register router
 
-router.post("/register" ,(req,res)=> {
-res.send('register user')
-})
+router.post("/register", register)
 
 //login user
 router.post("/login" ,(req,res)=> {
