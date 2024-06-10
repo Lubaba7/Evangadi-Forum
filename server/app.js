@@ -1,31 +1,47 @@
-const express = require('express');
+require("dotenv").config();
+const express = require("express");
 const app = express();
-const port = 5500
+const PORT = 5500;
 
-
+const cors = require('cors')
+app.use(cors())
 
 //db connection
-const dbconnection =require("./db/dbConfige")
+const dbconnection = require("./db/dbConfige");
 
-//user routs middleware file
-const userRoutes = require("./routes/userRoute")
-app.use(express.json())
+//use routes middleware file imported
+const useRoutes = require("./routes/userRoute");
 
-app.use("/api/users", userRoutes)
+//question routes middleware file imported
+const questionRoutes = require("./routes/questionRoute");
 
-///json middleware to extract json data
+//answer routes middleware file imported
+const answerRoutes = require("./routes/answerRoute");
 
+//authentication middleware file
+const authMiddleware = require("./middleware/authMiddleware");
 
+//json middleware to extract json data
+app.use(express.json());
 
+//use routes middleware
+app.use("/api/users", useRoutes);
 
+//question routes middleware
+app.use("/api/questions", authMiddleware, questionRoutes)
 
-//////
-app.listen(5500, (err) => {
-    if (err) {
-        console.log(err);
-    }
-    else {
-        console.log(`listening on ${port}`)
-    }
-})
+//answer routes middleware
+app.use("/api/answers", authMiddleware, answerRoutes)
 
+const start = async () => {
+  try {
+    const result = await dbconnection.execute("select 'test' ");
+    await app.listen(PORT);
+    console.log("database connection established");
+    console.log(`listening on port ${PORT}`);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+start();
